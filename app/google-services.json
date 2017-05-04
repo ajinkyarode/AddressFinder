@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "967525605006",
+    "firebase_url": "https://addressfinder-92446.firebaseio.com",
+    "project_id": "addressfinder-92446",
+    "storage_bucket": "addressfinder-92446.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967525605006:android:7545e4243f4a9a58",
+        "android_client_info": {
+          "package_name": "com.example.ajinkyarode.addressfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "967525605006-tehu78ij9igtgpaf89g5abekhlqsadvj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvG3PQs-iGRT0AqU4QGFZqJRS5Px-BJaU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
