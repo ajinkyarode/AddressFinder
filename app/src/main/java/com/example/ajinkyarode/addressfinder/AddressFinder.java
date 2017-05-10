@@ -13,6 +13,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.support.v4.app.Fragment;
@@ -50,6 +51,9 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
     private static String locale=null;
     private GoogleMap mMap;
     SupportMapFragment mapFragment;
+    private TextView tv;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,16 +63,14 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
+        tv=(TextView)findViewById(R.id.textView);
+        tv.setText(Html.fromHtml(getString(R.string.title)));
 
         button = (Button) findViewById(R.id.button);
         camera = (Button) findViewById(R.id.button2);
         latlon = (TextView) findViewById(R.id.textView4);
 
         display = (TextView) findViewById(R.id.textView2);
-
-
 
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 

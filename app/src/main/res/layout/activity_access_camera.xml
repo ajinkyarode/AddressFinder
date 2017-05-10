@@ -5,14 +5,15 @@
 
 
     <RelativeLayout
-        android:layout_width="380dp"
+        android:layout_width="match_parent"
         android:layout_height="380dp"
         android:layout_centerHorizontal="true"
-        android:background="#000000"
-        android:id="@+id/img">
+        android:id="@+id/img"
+        android:padding="10dp">
     <ImageView
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:id="@+id/imageView"
         android:layout_centerHorizontal="true"
         android:adjustViewBounds="true"
@@ -23,8 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView7"
+        android:layout_marginTop="25dp"
         android:layout_below="@+id/img"
-        android:layout_marginTop="20dp"
         android:textAlignment="center" />
 
 
@@ -32,11 +33,13 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView7"
-        android:layout_marginTop="10dp"
-        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="25dp"
         android:id="@+id/btn"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:gravity="bottom"
+        android:layout_below="@+id/textView7"
+        android:padding="10dp">
 
 
 
@@ -57,6 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="Save"
+
         android:id="@+id/button4"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/button3"

@@ -2,9 +2,12 @@ package com.example.ajinkyarode.addressfinder;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -41,6 +44,7 @@ import java.io.InputStream;
 public class CameraAccess extends Activity{
 
     private static final int CAMERA_REQUEST = 1888;
+    private static final int PICTURE_RESULT = 1;
     private ImageView imageView;
     private Button capture;
     private Button exit;
@@ -51,8 +55,10 @@ public class CameraAccess extends Activity{
     private String addrs;
     private String temp2;
     private String temp1;
-
-
+    ContentValues values;
+    Uri imageUri;
+    Bitmap thumbnail;
+    String imageurl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +80,22 @@ public class CameraAccess extends Activity{
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         capture.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
+            public void onClick(View v) {
+                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, "New Picture");
+                values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
+                imageUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                startActivityForResult(intent, PICTURE_RESULT);
+
+
+
+                //startActivityForResult(cameraIntent, CAMERA_REQUEST);
                 addrs=address;
                 String[] temp = addrs.split(":");
                 temp1=temp[0];
@@ -90,19 +108,11 @@ public class CameraAccess extends Activity{
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                /*ImageLocation iloc= new ImageLocation();
-                iloc.setAddress("Rochester");
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        //DatabaseReference myRef = database.getReference("addressfinder-92446");
-                DatabaseReference userId = database.getReferenceFromUrl(Config.FIREBASE_URL);
-       // myRef.child("addressfinder").setValue(iloc);
-                //userId.push().child(name);
-                userId.child("addressfinder").setValue(iloc);*/
-
                 String encodedString = BitMapToString(photo);
-
+        String st=mStorage.getPath();
+                Log.d("hi",st);
         StorageReference filedata = mStorage.child("Photos").child(temp2).child(temp1.concat(".jpg"));
-                //Log.d("Hi",encodedString);
+
         byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
 
         filedata.putBytes(encodeByte);
@@ -124,28 +134,41 @@ public class CameraAccess extends Activity{
 
 
 
-
-
-
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+        switch (requestCode) {
 
+            case PICTURE_RESULT:
+                if (requestCode == PICTURE_RESULT)
+                    if (resultCode == Activity.RESULT_OK) {
+                        try {
+                            photo = MediaStore.Images.Media.getBitmap(
+                                    getContentResolver(), imageUri);
+                            imageView.setImageBitmap(photo);
+                            imageurl = getRealPathFromURI(imageUri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-
-
-
-             photo = (Bitmap) data.getExtras().get("data");
-
-            int p_width=photo.getWidth();
-            int p_height=photo.getHeight();
-            int i_width=imageView.getWidth();
-            int i_height = imageView.getHeight();
-            String dimen = p_width + ":" + p_height + ":" + i_width + ":" + i_height;
-            Log.d("Hi",dimen);
-            imageView.setImageBitmap(photo);
+                    }
         }
     }
+
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+        int column_index = cursor
+                .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
+    }
+
+
+    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
+             photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+        }
+    }*/
 
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
