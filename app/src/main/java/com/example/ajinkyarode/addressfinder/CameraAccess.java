@@ -1,42 +1,32 @@
 package com.example.ajinkyarode.addressfinder;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-
 import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.*;
-import com.google.firebase.database.DatabaseReference;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 
 /**
  * Created by ajinkyarode on 3/24/17.
@@ -65,25 +55,17 @@ public class CameraAccess extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_access_camera);
         this.imageView = (ImageView)this.findViewById(R.id.imageView);
-
-
-
-
         capture=(Button) findViewById(R.id.button3);
         exit = (Button) findViewById(R.id.button5);
-        addr= (TextView) findViewById(R.id.textView7);
+        addr= (TextView) findViewById(R.id.textView8);
         save= (Button) findViewById(R.id.button4);
         mStorage = FirebaseStorage.getInstance().getReference();
         Intent intent = getIntent();
         final String address = intent.getExtras().getString("address");
-
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-
-        capture.setOnClickListener(new View.OnClickListener() {
+        imageView.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-                //Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
                 values = new ContentValues();
                 values.put(MediaStore.Images.Media.TITLE, "New Picture");
                 values.put(MediaStore.Images.Media.DESCRIPTION, "From your Camera");
@@ -92,10 +74,6 @@ public class CameraAccess extends Activity{
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                 startActivityForResult(intent, PICTURE_RESULT);
-
-
-
-                //startActivityForResult(cameraIntent, CAMERA_REQUEST);
                 addrs=address;
                 String[] temp = addrs.split(":");
                 temp1=temp[0];
@@ -104,52 +82,59 @@ public class CameraAccess extends Activity{
             }
         });
 
-
         save.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
                 String encodedString = BitMapToString(photo);
         String st=mStorage.getPath();
                 Log.d("hi",st);
         StorageReference filedata = mStorage.child("Photos").child(temp2).child(temp1.concat(".jpg"));
-
         byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+        //filedata.putBytes(encodeByte);
+                UploadTask uploadTask = filedata.putBytes(encodeByte);
+                uploadTask.addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle unsuccessful uploads
+                    }
+                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                        //Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        Toast.makeText(getBaseContext(), "Image Uploaded..", Toast.LENGTH_LONG).show();
+                        imageView.setBackgroundResource(R.drawable.camera);
+                        imageView.setImageBitmap(null);
+                        addr.setText("");
+                    }
+                });
 
-        filedata.putBytes(encodeByte);
-                
-        //myRef.setValue("Hello, World!");
+
             }
         });
-
         exit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 System.exit(0);
             }
         });
-
-
-
-
     }
-
-
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
 
             case PICTURE_RESULT:
-                if (requestCode == PICTURE_RESULT)
+                if (requestCode == PICTURE_RESULT) {
                     if (resultCode == Activity.RESULT_OK) {
                         try {
                             photo = MediaStore.Images.Media.getBitmap(
                                     getContentResolver(), imageUri);
+                            imageView.setBackgroundResource(0);
                             imageView.setImageBitmap(photo);
                             imageurl = getRealPathFromURI(imageUri);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                     }
+                }
         }
     }
 
@@ -161,14 +146,6 @@ public class CameraAccess extends Activity{
         cursor.moveToFirst();
         return cursor.getString(column_index);
     }
-
-
-    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_REQUEST && resultCode == Activity.RESULT_OK) {
-             photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
-        }
-    }*/
 
     private boolean checkCameraHardware(Context context) {
         if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -187,7 +164,5 @@ public class CameraAccess extends Activity{
         String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
-
-
 }
 

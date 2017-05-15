@@ -53,33 +53,23 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
     SupportMapFragment mapFragment;
     private TextView tv;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address_finder);
-
         mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         tv=(TextView)findViewById(R.id.textView);
         tv.setText(Html.fromHtml(getString(R.string.title)));
-
         button = (Button) findViewById(R.id.button);
         camera = (Button) findViewById(R.id.button2);
         latlon = (TextView) findViewById(R.id.textView4);
-
         display = (TextView) findViewById(R.id.textView2);
-
         mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
-
         mlocListener = new MyLocation1();
-        //Toast.makeText(getApplicationContext(), "HI", Toast.LENGTH_SHORT).show();
 
         if (!mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            //buildAlertMessageNoGps();
             Log.d(TAG,"No provider");
         }
 
@@ -88,12 +78,6 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
             button.setEnabled(true);
             button.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    //lat = Double.parseDouble(latitude.getText().toString());
-                    //lon = Double.parseDouble(longitude.getText().toString());
-
-                    //Log.d(TAG,lat.toString());
-                    //Log.d(TAG,lon.toString());
-
 
                     if (lon != null & lat != null) {
                         latlon.setText("Latitude: "+lat.toString()+"\n"+"Longitude: "+lon.toString());
@@ -114,7 +98,6 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
                 }
             });
 
-
         camera.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(AddressFinder.this, CameraAccess.class);
@@ -124,11 +107,8 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
         });
     }
 
-
     public String getLoc(Double lat, Double lon) {
-
         List<Address> addresses;
-
         geocoder = new Geocoder(this, Locale.getDefault());
         String city = null;
         String state = null;
@@ -137,7 +117,6 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
         String locality = null;
         try {
             addresses = geocoder.getFromLocation(lat, lon, 1);
-
             locality = addresses.get(0).getFeatureName();
             city = addresses.get(0).getLocality();
             state = addresses.get(0).getAdminArea();
@@ -157,7 +136,6 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
             LatLng loc = new LatLng(lat, lon);
             mMap.addMarker(new MarkerOptions().position(loc).title("ABC"));
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc,15));
-
         }
     }
 
@@ -175,15 +153,12 @@ public class AddressFinder extends FragmentActivity implements OnMapReadyCallbac
 
     @Override
     public void onProviderDisabled(String provider) {
-
-
         Toast.makeText(getBaseContext(), "Gps is turned off!! ",
                 Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onProviderEnabled(String provider) {
-
         Toast.makeText(getBaseContext(), "Gps is turned on!! ",
                 Toast.LENGTH_SHORT).show();
     }

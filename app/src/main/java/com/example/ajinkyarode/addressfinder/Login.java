@@ -23,39 +23,29 @@ public class Login extends BaseActivity implements
         View.OnClickListener {
 
     private static final String TAG = "EmailPassword";
-
     private TextView mStatusTextView;
     private TextView mDetailTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
-
-    // [START declare_auth]
     private FirebaseAuth mAuth;
-    // [END declare_auth]
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
         mDetailTextView = (TextView) findViewById(R.id.detail);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
+        mAuth = FirebaseAuth.getInstance();
 
-        // Buttons
         findViewById(R.id.email_sign_in_button).setOnClickListener(this);
         findViewById(R.id.email_create_account_button).setOnClickListener(this);
         findViewById(R.id.sign_out_button).setOnClickListener(this);
         findViewById(R.id.verify_email_button).setOnClickListener(this);
-
-        // [START initialize_auth]
-        mAuth = FirebaseAuth.getInstance();
-        // [END initialize_auth]
     }
 
-    // [START on_start_check_user]
     @Override
     public void onStart() {
         super.onStart();
@@ -63,7 +53,6 @@ public class Login extends BaseActivity implements
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
     }
-    // [END on_start_check_user]
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
@@ -100,7 +89,7 @@ public class Login extends BaseActivity implements
     }
 
     private void signIn(String email, String password) {
-        Log.d(TAG, "signIn:" + email);
+        //Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
             return;
         }
@@ -114,15 +103,14 @@ public class Login extends BaseActivity implements
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithEmail:success");
+                            //Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-
                             Intent intent = new Intent(Login.this, AddressFinder.class);
                             startActivity(intent);
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithEmail:failure", task.getException());
+                            //Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             updateUI(null);
@@ -151,7 +139,6 @@ public class Login extends BaseActivity implements
         // Send verification email
         // [START send_email_verification]
         final FirebaseUser user = mAuth.getCurrentUser();
-
         user.sendEmailVerification().addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
@@ -193,7 +180,6 @@ public class Login extends BaseActivity implements
         } else {
             mPasswordField.setError(null);
         }
-
         return valid;
     }
 
@@ -203,16 +189,13 @@ public class Login extends BaseActivity implements
             mStatusTextView.setText(getString(R.string.emailpassword_status_fmt,
                     user.getEmail(), user.isEmailVerified()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
-
             findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
             findViewById(R.id.email_password_fields).setVisibility(View.GONE);
             findViewById(R.id.signed_in_buttons).setVisibility(View.VISIBLE);
-
             findViewById(R.id.verify_email_button).setEnabled(!user.isEmailVerified());
         } else {
             mStatusTextView.setText(R.string.signed_out);
             mDetailTextView.setText(null);
-
             findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
             findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
             findViewById(R.id.signed_in_buttons).setVisibility(View.GONE);

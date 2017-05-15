@@ -11,14 +11,6 @@ public class ImageLocation {
     public ImageLocation() {
       /*Blank default constructor essential for Firebase*/
     }
-    //Getters and setters
-    /*public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }*/
 
     public String getAddress() {
         return address;
