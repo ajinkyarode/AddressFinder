@@ -6,6 +6,7 @@ package com.example.ajinkyarode.addressfinder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -28,12 +29,13 @@ public class Login extends BaseActivity implements
     private EditText mEmailField;
     private EditText mPasswordField;
     private FirebaseAuth mAuth;
-
+    private TextView tv;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        tv=(TextView)findViewById(R.id.textView);
+        tv.setText(Html.fromHtml(getString(R.string.title)));
         mStatusTextView = (TextView) findViewById(R.id.status);
         mDetailTextView = (TextView) findViewById(R.id.detail);
         mEmailField = (EditText) findViewById(R.id.field_email);
